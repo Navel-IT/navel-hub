@@ -107,7 +107,7 @@ sub startup {
 
     my $routes = $self->routes;
 
-    $routes->any($self->storer_proxy_pass->{location} . '(*path)')->to(
+    $routes->any($self->storer_proxy_pass->{location})->partial(1)->to(
         'RESTProxy#any',
         remote => $self->storer_proxy_pass->{remote}
     );
@@ -115,10 +115,10 @@ sub startup {
     while (my ($collector_manager_name, $collector_manager_url) = each %{$self->config('collector_managers')}) {
         $self->collector_managers_proxy_pass->{$collector_manager_name} = {
             remote => Mojo::URL->new($collector_manager_url),
-            location => '/api/collector-manager/' . $collector_manager_name . '/proxy'
+            location => '/api/collector-managers/' . $collector_manager_name . '/proxy'
         };
 
-        $routes->any($self->collector_managers_proxy_pass->{$collector_manager_name}->{location} . '(*path)')->to(
+        $routes->any($self->collector_managers_proxy_pass->{$collector_manager_name}->{location})->partial(1)->to(
             'RESTProxy#any',
             remote => $self->collector_managers_proxy_pass->{$collector_manager_name}->{remote}
         );

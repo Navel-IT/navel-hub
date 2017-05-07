@@ -26,7 +26,7 @@ sub any {
 
     my $url_to_proxy = $controller->stash('remote')->clone();
 
-    $url_to_proxy->path()->merge($path);
+    $url_to_proxy->path()->trailing_slash(1)->merge($path);
 
     my $request = $controller->req()->clone()->url($url_to_proxy);
 
