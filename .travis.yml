@@ -17,7 +17,7 @@ before_install:
   - pushd ..
   - f_install_navel_dep navel-base
   - f_install_navel_dep navel-api
-  - f_install_navel_dep navel-mojolicious-plugin-openapi-stdresponses
+  - f_install_navel_dep navel-mojolicious-plugin-api-stdresponses
   - popd
   - cpanm --quiet --notest Devel::Cover::Report::Coveralls
 after_success:

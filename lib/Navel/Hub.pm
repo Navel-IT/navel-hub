@@ -24,7 +24,7 @@ sub startup {
     my $self = shift;
 
     $self->plugin('Config');
-    $self->plugin('Navel::Mojolicious::Plugin::OpenAPI::StdResponses');
+    $self->plugin('Navel::Mojolicious::Plugin::API::StdResponses');
 
     $self->app->sessions->cookie_name(__PACKAGE__);
 
@@ -40,27 +40,12 @@ sub startup {
         around_action => sub {
             my ($next, $controller) = @_;
 
-            state $unauthorized_response = {
-                ok => [],
-                ko => [
-                    'unauthorized'
-                ]
-            };
-
             if (defined $controller->stash('remote')) {
-                return $controller->render(
-                    json => $unauthorized_response,
-                    status => 401
-                ) unless $controller->session('logged_in');
+                return $controller->unauthorized unless $controller->session('logged_in');
             } else {
                 my $openapi_op_spec = $controller->openapi->spec;
 
-                if (defined $openapi_op_spec && $openapi_op_spec->{responses}->{401} && ! $controller->session('logged_in')) {
-                    return $controller->render(
-                        openapi => $unauthorized_response,
-                        status => 401
-                    );
-                }
+                return $controller->unauthorized if defined $openapi_op_spec && $openapi_op_spec->{responses}->{401} && ! $controller->session('logged_in');
             }
 
             $next->();

@@ -32,7 +32,7 @@ WriteMakefile(
     MIN_PERL_VERSION => $min_perl_version,
     PREREQ_PM => {
         'Navel::Base' => 0,
-        'Navel::Mojolicious::Plugin::OpenAPI::StdResponses' => 0,
+        'Navel::Mojolicious::Plugin::API::StdResponses' => 0,
         'Navel::API' => 0,
         'Mojolicious' => 0,
         # 'Mojo::Pg' => 0,
