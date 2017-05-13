@@ -110,7 +110,7 @@ sub startup {
     }
 
     $self->plugin(
-        'OpenAPI' => {
+        OpenAPI => {
             url => Navel::API::OpenAPI::Hub->spec_file_location,
             coerce => {} # empty hashtable is for 'coerce nothing'
         }
