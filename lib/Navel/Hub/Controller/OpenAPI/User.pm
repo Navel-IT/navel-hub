@@ -37,10 +37,7 @@ sub login {
     }
 
     $controller->render(
-        openapi => {
-            ok => \@ok,
-            ko => \@ko
-        },
+        openapi => $controller->navel->api->definitions->ok_ko(\@ok, \@ko),
         status => @ko ? 403 : 201
     );
 }
@@ -61,10 +58,7 @@ sub logout {
     }
 
     $controller->render(
-        openapi => {
-            ok => \@ok,
-            ko => \@ko
-        },
+        openapi => $controller->navel->api->definitions->ok_ko(\@ok, \@ko),
         status => @ko ? 400 : 200
     );
 }

@@ -30,7 +30,7 @@ sub show_proxy {
 
     my $proxy_pass = $controller->navel->collector_managers_proxy_pass->{$name};
 
-    return $controller->navel->stdresponses->resource_not_found($name) unless defined $proxy_pass;
+    return $controller->navel->api->responses->resource_not_found($name) unless defined $proxy_pass;
 
     $controller->render(
         openapi => {

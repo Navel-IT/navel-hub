@@ -41,11 +41,11 @@ sub startup {
             my ($next, $controller) = @_;
 
             if (defined $controller->stash('remote')) {
-                return $controller->navel->stdresponses->unauthorized unless $controller->session('logged_in');
+                return $controller->navel->api->responses->unauthorized unless $controller->session('logged_in');
             } else {
                 my $openapi_op_spec = $controller->openapi->spec;
 
-                return $controller->navel->stdresponses->unauthorized if defined $openapi_op_spec && $openapi_op_spec->{responses}->{401} && ! $controller->session('logged_in');
+                return $controller->navel->api->responses->unauthorized if defined $openapi_op_spec && $openapi_op_spec->{responses}->{401} && ! $controller->session('logged_in');
             }
 
             $next->();
@@ -68,10 +68,7 @@ sub startup {
                 return;
             }
 
-            $arguments->{json} = {
-                ok => \@ok,
-                ko => \@ko
-            };
+            $arguments->{json} = $controller->navel->api->definitions->ok_ko(\@ok, \@ko);
         }
     );
 
@@ -116,10 +113,7 @@ sub startup {
             renderer => sub {
                 my ($controller, $data) = @_;
 
-                $data = {
-                    ok => [],
-                    ko => $data->{errors}
-                } if ref $data eq 'HASH' && ref $data->{errors} eq 'ARRAY';
+                $data = $controller->navel->api->definitions->ok_ko([], $data->{errors}) if ref $data eq 'HASH' && ref $data->{errors} eq 'ARRAY';
 
                 Mojolicious::Plugin::OpenAPI::_render_json($controller, $data);
             }
