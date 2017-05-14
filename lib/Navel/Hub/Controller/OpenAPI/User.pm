@@ -32,7 +32,7 @@ sub login {
         $controller->session(
             username => $userinfo->{username}
         );
-    } else {
+
         push @ok, 'successfully logged in';
     }
 
