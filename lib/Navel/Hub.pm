@@ -112,7 +112,17 @@ sub startup {
     $self->plugin(
         OpenAPI => {
             url => Navel::API::OpenAPI::Hub->spec_file_location,
-            coerce => {} # empty hashtable is for 'coerce nothing'
+            coerce => {}, # empty hashtable is for 'coerce nothing'
+            renderer => sub {
+                my ($controller, $data) = @_;
+
+                $data = {
+                    ok => [],
+                    ko => $data->{errors}
+                } if ref $data eq 'HASH' && ref $data->{errors} eq 'ARRAY';
+
+                Mojolicious::Plugin::OpenAPI::_render_json($controller, $data);
+            }
         }
     );
 }
