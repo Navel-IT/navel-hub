@@ -18,7 +18,7 @@ sub list {
 
     $controller->render(
         openapi => [
-            keys %{$controller->collector_managers_proxy_pass}
+            keys %{$controller->navel->collector_managers_proxy_pass}
         ]
     );
 }
@@ -28,9 +28,9 @@ sub show_proxy {
 
     my $name = $controller->validation->param('name');
 
-    my $proxy_pass = $controller->collector_managers_proxy_pass->{$name};
+    my $proxy_pass = $controller->navel->collector_managers_proxy_pass->{$name};
 
-    return $controller->resource_not_found($name) unless defined $proxy_pass;
+    return $controller->navel->stdresponses->resource_not_found($name) unless defined $proxy_pass;
 
     $controller->render(
         openapi => {

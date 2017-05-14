@@ -41,11 +41,11 @@ sub startup {
             my ($next, $controller) = @_;
 
             if (defined $controller->stash('remote')) {
-                return $controller->unauthorized unless $controller->session('logged_in');
+                return $controller->navel->stdresponses->unauthorized unless $controller->session('logged_in');
             } else {
                 my $openapi_op_spec = $controller->openapi->spec;
 
-                return $controller->unauthorized if defined $openapi_op_spec && $openapi_op_spec->{responses}->{401} && ! $controller->session('logged_in');
+                return $controller->navel->stdresponses->unauthorized if defined $openapi_op_spec && $openapi_op_spec->{responses}->{401} && ! $controller->session('logged_in');
             }
 
             $next->();
@@ -76,7 +76,7 @@ sub startup {
     );
 
     $self->helper(
-        storer_proxy_pass => sub {
+        'navel.storer_proxy_pass' => sub {
             state $proxy_pass = {
                 remote => Mojo::URL->new($self->config('storer')),
                 location => '/api/storer/proxy'
@@ -85,27 +85,27 @@ sub startup {
     );
 
     $self->helper(
-        collector_managers_proxy_pass => sub {
+        'navel.collector_managers_proxy_pass' => sub {
             state $proxy_pass = {};
         }
     );
 
     my $routes = $self->routes;
 
-    $routes->any($self->storer_proxy_pass->{location})->partial(1)->to(
+    $routes->any($self->navel->storer_proxy_pass->{location})->partial(1)->to(
         'RESTProxy#any',
-        remote => $self->storer_proxy_pass->{remote}
+        remote => $self->navel->storer_proxy_pass->{remote}
     );
 
     while (my ($collector_manager_name, $collector_manager_url) = each %{$self->config('collector_managers')}) {
-        $self->collector_managers_proxy_pass->{$collector_manager_name} = {
+        $self->navel->collector_managers_proxy_pass->{$collector_manager_name} = {
             remote => Mojo::URL->new($collector_manager_url),
             location => '/api/collector-managers/' . $collector_manager_name . '/proxy'
         };
 
-        $routes->any($self->collector_managers_proxy_pass->{$collector_manager_name}->{location})->partial(1)->to(
+        $routes->any($self->navel->collector_managers_proxy_pass->{$collector_manager_name}->{location})->partial(1)->to(
             'RESTProxy#any',
-            remote => $self->collector_managers_proxy_pass->{$collector_manager_name}->{remote}
+            remote => $self->navel->collector_managers_proxy_pass->{$collector_manager_name}->{remote}
         );
     }
 

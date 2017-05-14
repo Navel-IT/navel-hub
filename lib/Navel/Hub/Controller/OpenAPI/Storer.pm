@@ -18,8 +18,8 @@ sub show_proxy {
 
     $controller->render(
         openapi => {
-            remote => $controller->storer_proxy_pass->{remote}->to_string,
-            location => $controller->storer_proxy_pass->{location}
+            remote => $controller->navel->storer_proxy_pass->{remote}->to_string,
+            location => $controller->navel->storer_proxy_pass->{location}
         }
     );
 }
