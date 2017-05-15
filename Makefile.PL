@@ -39,6 +39,7 @@ WriteMakefile(
         'Mojo::JSON::MaybeXS' => 0,
         'Mojolicious::Plugin::OpenAPI' => 1.15,
         'FindBin' => 0,
+        'EV' => ,
         'IO::Socket::SSL' => 1.84
     },
     CONFIGURE_REQUIRES => {
