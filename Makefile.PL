@@ -37,7 +37,7 @@ WriteMakefile(
         'Mojolicious' => 0,
         # 'Mojo::Pg' => 0,
         'Mojo::JSON::MaybeXS' => 0,
-        'Mojolicious::Plugin::OpenAPI' => 0,
+        'Mojolicious::Plugin::OpenAPI' => 1.15,
         'FindBin' => 0,
         'IO::Socket::SSL' => 1.84
     },
