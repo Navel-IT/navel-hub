@@ -20,23 +20,23 @@ use Mojo::Transaction::HTTP;
 sub any {
     my $controller = shift;
 
-    $controller->render_later();
+    $controller->render_later;
 
     my $path = Mojo::Path->new($controller->stash('path'))->leading_slash(0);
 
-    my $url_to_proxy = $controller->stash('remote')->clone();
+    my $url_to_proxy = $controller->stash('remote')->clone;
 
-    $url_to_proxy->path()->trailing_slash(1)->merge($path);
+    $url_to_proxy->path->trailing_slash(1)->merge($path);
 
-    my $request = $controller->req()->clone()->url($url_to_proxy);
+    my $request = $controller->req->clone->url($url_to_proxy);
 
-    $request->content()->headers(Mojo::Headers->new());
+    $request->content->headers(Mojo::Headers->new);
 
-    $request->fix_headers();
+    $request->fix_headers;
 
-    $controller->app()->log()->debug('proxying HTTP ' . $request->method() . ' ' . $request->url());
+    $controller->app->log->debug('proxying HTTP ' . $request->method . ' ' . $request->url);
 
-    $controller->ua()->start(
+    $controller->ua->start(
         Mojo::Transaction::HTTP->new(
             req => $request
         ) => sub {
@@ -44,8 +44,8 @@ sub any {
 
             $controller->render(
                 format => 'json',
-                text => $tx->res()->body(),
-                status => $tx->res()->code()
+                text => $tx->res->body,
+                status => $tx->res->code
             );
         }
     );
