@@ -36,7 +36,7 @@ sub any {
 
     $controller->app->log->debug('proxying HTTP ' . $request->method . ' ' . $request->url);
 
-    $controller->ua->start(
+    $controller->ua->max_redirects(3)->start(
         Mojo::Transaction::HTTP->new(
             req => $request
         ) => sub {
