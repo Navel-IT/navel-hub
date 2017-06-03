@@ -15,6 +15,7 @@ use Mojo::Base 'Mojolicious';
 
 # use Mojo::Pg;
 use Mojo::URL;
+use Mojo::Util 'secure_compare';
 
 use Navel::API::OpenAPI::Hub;
 
@@ -40,12 +41,29 @@ sub startup {
         around_action => sub {
             my ($next, $controller) = @_;
 
-            if (defined $controller->stash('remote')) {
-                return $controller->navel->api->responses->unauthorized unless $controller->session('logged_in');
-            } else {
-                my $openapi_op_spec = $controller->openapi->spec;
+            state $is_authenticated = sub {
+                my $controller = shift;
 
-                return $controller->navel->api->responses->unauthorized if defined $openapi_op_spec && $openapi_op_spec->{responses}->{401} && ! $controller->session('logged_in');
+                return 1 if $controller->session('logged_in');
+
+                my $url = $controller->req->url->to_abs;
+
+                if (defined (my $userinfo = $url->userinfo)) {
+                    my $username = $url->username;
+
+                    my $users = $controller->config('users');
+
+                    exists $users->{$username} && secure_compare(
+                        $userinfo,
+                        join ':', $username, $users->{$username} // ''
+                    );
+                }
+            };
+
+            if (defined $controller->stash('remote')) {
+                return $controller->navel->api->responses->unauthorized unless $is_authenticated->($controller);
+            } elsif (defined (my $openapi_op_spec = $controller->openapi->spec)) {
+                return $controller->navel->api->responses->unauthorized if $openapi_op_spec->{responses}->{401} && ! $is_authenticated->($controller);
             }
 
             $next->();
